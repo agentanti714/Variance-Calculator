@@ -16,18 +16,41 @@
     </style>
 </head>
 <body>
-    <h1>Home</h1>
-    <p>Welcome to the home page.</p>
+    <h1>Calculator for variance</h1>
+    <p>It tells you the minimum cash to aim for, assuming you use the mean values for calculating your upgrader multipliers.</p>
+    <p>Fill in the form below and click the submit button to get the result.</p>
     <form>
-        <label><input type="checkbox" name="item1" value="Item 1"> Havium Mine</label><br>
-        <label><input type="checkbox" name="item2" value="Item 2"> Astral Setter</label><br>
-        <label><input type="checkbox" name="item3" value="Item 3"> Meralin's Sorcery</label><br>
-        <label><input type="checkbox" name="item4" value="Item 4"> Reaper's Fortress</label><br>
-        <label><input type="checkbox" name="item5" value="Item 5"> Final Faberge</label><br>
-        <label><input type="checkbox" name="item6" value="Item 6"> Midas Blaster</label><br>
-        <label><input type="checkbox" name="item7" value="Item 7"> Enchanted Library</label><br>
-        <label><input type="checkbox" name="item8" value="Item 8"> Ooftopian Refiner</label><br>
-        <button type="submit">Submit</button>
+        <label><input type="checkbox" name="upgrader" value="Havium Mine" checked> Havium Mine</label><br>
+        <label><input type="checkbox" name="upgrader" value="Astral Setter" checked> Astral Setter</label><br>
+        <label><input type="checkbox" name="upgrader" value="Meralin's Sorcery" checked> Meralin's Sorcery</label><br>
+        <label><input type="checkbox" name="upgrader" value="Reaper's Fortress" checked> Reaper's Fortress</label><br>
+        <label><input type="checkbox" name="upgrader" value="Final Faberge" checked> Final Faberge</label><br>
+        <label><input type="checkbox" name="upgrader" value="Midas Blaster" checked> Midas Blaster</label><br>
+        <label><input type="checkbox" name="upgrader" value="Enchanted Library" checked> Enchanted Library</label><br>
+        <label><input type="checkbox" name="upgrader" value="Ooftopian Refiner" checked> Ooftopian Refiner</label><br>
+        <label>lg(Additional variance): <input type="text" name="additional variance" pattern="[0-9]*\.[0-9]+" title="Numbers only" placeholder="Numbers only"></label><br>
+        <label>No. of resetters: <input type="number" name="resetter count" value="4" min="0" max="4" step="1" title="Between 0 and 4"/></label><br>
+        <label>Probability of success: <input type="text" name="success chance" pattern="0(\.\d+)?|1\.0|1" title="Numbers only" placeholder="Numbers only"></label><br>        <button type="submit">Submit</button>
     </form>
+    <p id="result"></p>
 </body>
+<script>
+    document.querySelector('form').addEventListener('submit', function(event){
+        event.preventDefault();
+        var upgraders = Array.from(document.querySelectorAll('input[name="upgrader"]:checked')).map(function(checkbox) {
+            return checkbox.value;
+        });
+        var additionalVariance = parseFloat(document.querySelector('input[name="additional variance"]').value);
+        var resetterCount = parseInt(document.querySelector('input[name="resetter count"]').value);
+        var successChance = parseFloat(document.querySelector('input[name="success chance"]').value);
+        var result = 0;
+        upgraders.forEach(function(upgrader) {
+            result += 0
+        });
+        document.querySelector('#result').textContent = 'The minimum cash to aim for is ' + result.toFixed(2) + ' cash.';
+    });
+</script>
+<noscript>
+    <p>Please enable JavaScript to use this calculator.</p>
+</noscript>
 </html>
