@@ -20,33 +20,48 @@
     <p>It tells you the minimum cash to aim for, assuming you use the mean values for calculating your upgrader multipliers.</p>
     <p>Fill in the form below and click the submit button to get the result.</p>
     <form>
+        <h2>Items used:</h1>
         <label><input type="checkbox" name="upgrader" value="Havium Mine" checked> Havium Mine</label><br>
         <label><input type="checkbox" name="upgrader" value="Astral Setter" checked> Astral Setter</label><br>
         <label><input type="checkbox" name="upgrader" value="Meralin's Sorcery" checked> Meralin's Sorcery</label><br>
         <label><input type="checkbox" name="upgrader" value="Reaper's Fortress" checked> Reaper's Fortress</label><br>
         <label><input type="checkbox" name="upgrader" value="Final Faberge" checked> Final Faberge</label><br>
         <label><input type="checkbox" name="upgrader" value="Midas Blaster" checked> Midas Blaster</label><br>
-        <label><input type="checkbox" name="upgrader" value="Enchanted Library" checked> Enchanted Library</label><br>
-        <label><input type="checkbox" name="upgrader" value="Ooftopian Refiner" checked> Ooftopian Refiner</label><br>
-        <label>lg(Additional variance): <input type="text" name="additional variance" pattern="[0-9]*\.[0-9]+" title="Numbers only" placeholder="Numbers only"></label><br>
+        <label><input type="checkbox" name="upgrader" value="Enchanted Library" checked> Enchanted Library</label><br><br>
+        <label>lg(Other overall variance): <input type="text" name="other variance" pattern="[0-9]*\.[0-9]+|[0-9]*" title="Numbers only" placeholder="Numbers only" value="0.3"></label>
+        <h3>The above should include uncertainty from items like Ooftopian Refiner, Temporal Armageddon, and inconsistent upgraders, after all resetters.</h3><br>
         <label>No. of resetters: <input type="number" name="resetter count" value="4" min="0" max="4" step="1" title="Between 0 and 4"/></label><br>
-        <label>Probability of success: <input type="text" name="success chance" pattern="0(\.\d+)?|1\.0|1" title="Numbers only" placeholder="Numbers only"></label><br>        <button type="submit">Submit</button>
+        <label>Probability of success: <input type="text" name="success chance" pattern="0(\.\d+)?|1\.0|1" title="Numbers only" placeholder="Numbers only" value="0.99"></label><br>
+        <button type="submit">Submit</button>
     </form>
-    <p id="result"></p>
+    <h2 id="result" style="background-color: yellow;"></h2>
 </body>
 <script>
     document.querySelector('form').addEventListener('submit', function(event){
         event.preventDefault();
+        // Get the values from the form
         var upgraders = Array.from(document.querySelectorAll('input[name="upgrader"]:checked')).map(function(checkbox) {
             return checkbox.value;
         });
-        var additionalVariance = parseFloat(document.querySelector('input[name="additional variance"]').value);
+        var additionalVariance = parseFloat(document.querySelector('input[name="other variance"]').value);
         var resetterCount = parseInt(document.querySelector('input[name="resetter count"]').value);
         var successChance = parseFloat(document.querySelector('input[name="success chance"]').value);
+        // Calculate the result
+        const upgradersToVariances = new Map([
+            ['Havium Mine', 0.0827552697442],
+            ['Astral Setter', 0.13323048167015814],
+            ['Meralin\'s Sorcery', 0.002435765663214982],
+            ['Reaper\'s Fortress', 0.0036113960632035477],
+            ['Final Faberge', 0.008246456248093403],
+            ['Midas Blaster', 0.040892893909544197],
+            ['Enchanted Library', 0.006510393605178625],
+        ]);
         var result = 0;
+        console.log(upgraders, additionalVariance, resetterCount, successChance); // Debugging
         upgraders.forEach(function(upgrader) {
-            result += 0
+            result += upgradersToVariances.get(upgrader);
         });
+        result = result * (1 + resetterCount) + additionalVariance;
         document.querySelector('#result').textContent = 'The minimum cash to aim for is ' + result.toFixed(2) + ' cash.';
     });
 </script>
