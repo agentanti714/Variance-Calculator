@@ -19,21 +19,28 @@
     <h1>Calculator for variance</h1>
     <p>It tells you the minimum cash to aim for, assuming you use the mean values for calculating your upgrader multipliers.</p>
     <p>Fill in the form below and click the submit button to get the result.</p>
-    <p>The default values in some of the input fields are derived from estimation.</p>
-    <p>If the calculator returns undefined, message me on Discord @ agentanti714.</p>
+    <p>The default values in the input fields are suggestions.</p>
+    <p>lg(Other overall variance) above should include uncertainty from items like Ooftopian Refiner, Temporal Armageddon, and inconsistent upgraders, after all resetters.</p>
+    <p>If the calculator returns undefined, it's probably because of the suffix.</p>
+    <p>@ agentanti714.</p>
     <form>
-        <h2>Items used:</h1>
-        <label><input type="checkbox" name="upgrader" value="Havium Mine" checked> Havium Mine</label><br>
+        <h2>Mine:</h2>
+        <label for="mine"></label>
+        <select name="mine" id="mine">
+            <option value="Havium Mine" selected>Havium Mine</option>
+            <option value="Other">Other (No variance)</option>
+        </select>
+
+        <h2>Upgraders:</h2>
         <label><input type="checkbox" name="upgrader" value="Astral Setter" checked> Astral Setter</label><br>
         <label><input type="checkbox" name="upgrader" value="Meralin's Sorcery" checked> Meralin's Sorcery</label><br>
         <label><input type="checkbox" name="upgrader" value="Reaper's Fortress" checked> Reaper's Fortress</label><br>
         <label><input type="checkbox" name="upgrader" value="Final Faberge" checked> Final Faberge</label><br>
         <label><input type="checkbox" name="upgrader" value="Midas Blaster" checked> Midas Blaster</label><br>
         <label><input type="checkbox" name="upgrader" value="Enchanted Library" checked> Enchanted Library</label><br><br>
-        <label>lg(Other overall variance): <input type="text" name="other variance" pattern="[0-9]*\.[0-9]+|[0-9]*" title="Numbers only" placeholder="Numbers only" value="0.3"></label>
-        <h3>The above should include uncertainty from items like Ooftopian Refiner, Temporal Armageddon, and inconsistent upgraders, after all resetters.</h3><br>
+        <label>lg(Other overall variance): <input type="text" name="other variance" pattern="[0-9]*\.[0-9]+|[0-9]*" title="Numbers only" placeholder="Numbers only" value="0.3"></label><br>
         <label>No. of resetters: <input type="number" name="resetter count" value="4" min="0" max="4" step="1" title="Between 0 and 4"/></label><br>
-        <label>Probability of success: <input type="text" name="success chance" pattern="0(\.\d+)?|1\.0|1" title="Numbers only" placeholder="Numbers only" value="0.99"></label><br>
+        <label>Probability of success: <input type="text" name="success chance" pattern="0(\.\d+)?|1\.0|1" title="Numbers only" placeholder="Numbers only" value="0.9992137"></label><br>
         <button type="submit">Submit</button>
     </form>
     <h2 id="result" style="background-color: yellow;"></h2>
@@ -43,6 +50,7 @@
         event.preventDefault();
 
         // Get the values from the form
+        var mine = document.querySelector('select[name="mine"]').value;
         var upgraders = Array.from(document.querySelectorAll('input[name="upgrader"]:checked')).map(function(checkbox) {
             return checkbox.value;
         });
@@ -51,32 +59,33 @@
         var successChance = parseFloat(document.querySelector('input[name="success chance"]').value);
 
         // Calculate the result
-        const upgradersToVariances = new Map([ //includes Havium Mine
+        const minesToVariances = new Map([
+            ['Havium Mine', 0.0827552697442],
+            ['Other', 0],
+        ]);
+        const upgradersToVariances = new Map([
             ['Havium Mine', 0.0827552697442],
             ['Astral Setter', 0.13323048167015814],
             ['Meralin\'s Sorcery', 0.002435765663214982],
             ['Reaper\'s Fortress', 0.0036113960632035477],
             ['Final Faberge', 0.008246456248093403],
-            ['Midas Blaster', 0.040892893909544197],
+            ['Midas Blaster', 0.04329382557027653],
             ['Enchanted Library', 0.006510393605178625],
         ]);
+
         var result = 0;
         var mine = 0
 
-        upgraders.forEach(function(upgrader) { //handles upgraders (exludes Havium Mine)
-            if (upgrader != 'Havium Mine') {
-                result += upgradersToVariances.get(upgrader) * (resetterCount + 1);
-            }
+        mine = minesToVariances.get('Havium Mine');
+
+        upgraders.forEach(function(upgrader) {
+            result += upgradersToVariances.get(upgrader) * (resetterCount + 1); //upgraders
         });
 
-        if (upgraders.includes('Havium Mine')) {
-            mine = upgradersToVariances.get('Havium Mine') * (resetterCount + 1);
-        }
-        
         result = mine + result + additionalVariance; //lg(overall variance)
         result = Math.sqrt(result); //lg(overall standard deviation)
         
-        // Find x, given P(N(0,1) <= x) = successChance
+        // Find x, given P(N(0,1) <= x) = successChance, inverse of the normal distribution
         function NormSInv(p) {
             var a1 = -39.6968302866538, a2 = 220.946098424521, a3 = -275.928510446969;
             var a4 = 138.357751867269, a5 = -30.6647980661472, a6 = 2.50662827745924;
@@ -116,11 +125,11 @@
         var x = NormSInv(successChance);
         result = Math.pow(10, result * x);
         result = result * 10 //due to rebirth price being 10 NONONGNTL
-        result = result.toPrecision(5);
-
+        
+        // Format the result
         const suffixes = ['OTNONGNTL', 'NONONGNTL', 'CENT', 'UNCENT']
         index = Math.floor(Math.log10(result)/3) //due to rebirth price being 10 NONONGNTL
-        result = '$' + String(result/(Math.pow(1000, (index)))) + ' ' + suffixes[index + 1]
+        result = '$' + String((result/(Math.pow(1000, (index)))).toPrecision(5)) + ' ' + suffixes[index + 1]
 
         document.querySelector('#result').textContent = 'The minimum cash to aim for is ' + result + '.';
     });
