@@ -131,7 +131,7 @@
         // Format the result
         const suffixes = ['OTNONGNTL', 'NONONGNTL', 'CENT', 'UNCENT']
         index = Math.floor(Math.log10(result)/3) //due to rebirth price being 10 NONONGNTL
-        result = '$' + String((result/(Math.pow(1000, (index)))).toPrecision(5)) + ' ' + suffixes[index + 1]
+        result = '$' + String((result/(Math.pow(1000, (index)))).toPrecision(5)) + ' ' + suffixes[index + 1] + ' (' + String((result*Math.pow(10, 300)).toPrecision(5)) + ')';
 
         document.querySelector('#result').textContent = 'The minimum cash to aim for is ' + result + '.';
     });
