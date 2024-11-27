@@ -17,7 +17,7 @@
 </head>
 <body>
     <h1>Variance Calculator</h1>
-    <p>It tells you the minimum cash to aim for, assuming you use the mean values for calculating your upgrader multipliers.</p>
+    <p>It tells you the value to divide final ore value by, assuming you use the mean values for calculating your upgrader multipliers.</p>
     <p>Fill in the form below and click the submit button to get the result (scroll down).</p>
     <p>The default values in the input fields are suggestions.</p>
     <p>lg(Other overall variance) above should include uncertainty from items like Ooftopian Refiner, Temporal Armageddon, and inconsistent upgraders, after all resetters.</p>
@@ -126,14 +126,11 @@
         }
         var x = NormSInv(successChance);
         result = Math.pow(10, result * x);
-        result = result * 10 //due to rebirth price being 10 NONONGNTL
         
         // Format the result
-        const suffixes = ['OTNONGNTL', 'NONONGNTL', 'CENT', 'UNCENT']
-        index = Math.floor(Math.log10(result)/3) //due to rebirth price being 10 NONONGNTL
-        result = '$' + String((result/(Math.pow(1000, (index)))).toPrecision(5)) + ' ' + suffixes[index + 1] + ' (' + String((result*Math.pow(10, 300)).toPrecision(5)) + ')';
+        var value = String(result.toPrecision(5));
 
-        document.querySelector('#result').textContent = 'The minimum cash to aim for is ' + result + '.';
+        document.querySelector('#result').textContent = 'Divide your final ore value by ' + value + '.';
     });
 </script>
 <noscript>
