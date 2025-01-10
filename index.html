@@ -52,7 +52,7 @@
         event.preventDefault();
 
         // Get the values from the form
-        var mine = document.querySelector('select[name="mine"]').value;
+        var mine = document.querySelector('#mine').value;
         var upgraders = Array.from(document.querySelectorAll('input[name="upgrader"]:checked')).map(function(checkbox) {
             return checkbox.value;
         });
@@ -63,7 +63,7 @@
         // Calculate the result
         const minesToVariances = new Map([
             ['Havium Mine', 0.0827552697442],
-            ['Other', 0],
+            ['Other', 0.0]
         ]);
         const upgradersToVariances = new Map([
             ['Havium Mine', 0.0827552697442],
@@ -78,9 +78,8 @@
         ]);
 
         var result = 0;
-        var mine = 0
 
-        mine = minesToVariances.get('Havium Mine');
+        mine = minesToVariances.get(mine);
 
         upgraders.forEach(function(upgrader) {
             result += upgradersToVariances.get(upgrader) * (resetterCount + 1); //upgraders
