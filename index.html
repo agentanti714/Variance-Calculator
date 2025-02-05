@@ -11,7 +11,17 @@
         }
         p {
             font-size: 14px;
-            color: #666;
+            color: #333;
+        }
+        h2 {
+            margin-top: 20px;
+        }
+        label, select {
+            display: block;
+            margin-bottom: 10px;
+        }
+        button {
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -20,8 +30,8 @@
     <p>It tells you the value to divide final ore value by, assuming you use the mean values for calculating your upgrader multipliers.</p>
     <p>Fill in the form below and click the submit button to get the result (scroll down).</p>
     <p>The default values in the input fields are suggestions.</p>
-    <p>lg(Other overall variance) above should include uncertainty from items like Ooftopian Refiner, Temporal Armageddon, and inconsistent upgraders, combined over all resetter uses.</p>
-    <p>Only covers realistic cases, 0.001 ≤ probability of success ≤ 0.999 for good results.</p>
+    <p>Variance(lg(other items)) above should include uncertainty from items like Ooftopian Refiner, Temporal Armageddon, and inconsistent upgraders, combined over all resetter uses.</p>
+    <p>Only covers realistic cases i.e. 0.001 ≤ probability of success ≤ 0.999.</p>
     <p>Discord: agentanti714.</p>
     <form>
         <h2>Mine:</h2>
@@ -32,22 +42,61 @@
         </select>
 
         <h2>Upgraders:</h2>
-        <label><input type="checkbox" name="upgrader" value="Astral Setter" checked> Astral Setter</label><br>
-        <label><input type="checkbox" name="upgrader" value="Meralin's Sorcery" checked> Meralin's Sorcery</label><br>
-        <label><input type="checkbox" name="upgrader" value="Reaper's Fortress" checked> Reaper's Fortress</label><br>
-        <label><input type="checkbox" name="upgrader" value="Final Faberge" checked> Final Faberge</label><br>
-        <label><input type="checkbox" name="upgrader" value="Midas Blaster" checked> Midas Blaster</label><br>
-        <label><input type="checkbox" name="upgrader" value="Legendary Peppermint" checked> Legendary Peppermint</label><br>
-        <label><input type="checkbox" name="upgrader" value="Enchanted Library" checked> Enchanted Library</label><br>
-        <label><input type="checkbox" name="upgrader" value="Anti-Gravity Scanner" checked> Anti-Gravity Scanner</label><br><br>
-        <label>lg(Other overall variance): <input type="text" name="other variance" pattern="[0-9]*\.[0-9]+|[0-9]*" title="Numbers only" placeholder="Numbers only" value="0.3"></label><br>
-        <label>No. of resetters: <input type="number" name="resetter count" value="4" min="0" max="4" step="1" title="Between 0 and 4"/></label><br>
-        <label>Probability of success: <input type="text" name="success chance" pattern="0(\.\d+)?|1\.0|1" title="Numbers only" placeholder="Numbers only" value="0.999"></label><br>
+        <label><input type="checkbox" name="upgrader" value="Astral Setter" checked> Astral Setter</label>
+        <label><input type="checkbox" name="upgrader" value="Meralin's Sorcery" checked> Meralin's Sorcery</label>
+        <label><input type="checkbox" name="upgrader" value="Reaper's Fortress" checked> Reaper's Fortress</label>
+        <label><input type="checkbox" name="upgrader" value="Final Faberge" checked> Final Faberge</label>
+        <label><input type="checkbox" name="upgrader" value="Midas Blaster" checked> Midas Blaster</label>
+        <label><input type="checkbox" name="upgrader" value="Legendary Peppermint" checked> Legendary Peppermint</label>
+        <label><input type="checkbox" name="upgrader" value="Enchanted Library" checked> Enchanted Library</label>
+        <label><input type="checkbox" name="upgrader" value="Anti-Gravity Scanner" checked> Anti-Gravity Scanner</label>
+        <label><input type="checkbox" name="upgrader" value="The Heart of Void" checked> The Heart of Void</label>
+        <div id="The Heart of Void fields">
+            <p>Chance that the ore is upgraded by The Heart of Void:</p>
+            <label>0 times: <input type="text" name="THoVfield0" value="0"></label>
+            <label>1 times: <input type="text" name="THoVfield1" value="0"></label>
+            <label>2 times: <input type="text" name="THoVfield2" value="0"></label>
+            <label>3 times: <input type="text" name="THoVfield3" value="0"></label>
+            <label>4 times: <input type="text" name="THoVfield4" value="0"></label>
+            <label>5 times: <input type="text" name="THoVfield5" value="0"></label>
+        </div>
+        <h2>Other:</h2>
+        <label>Variance(lg(other items)): <input type="text" name="other variance" pattern="[0-9]*\.[0-9]+|[0-9]*" title="Numbers only" placeholder="Numbers only" value="0.3"></label>
+        <label>No. of resetters: <input type="number" name="resetter count" value="4" min="0" max="4" step="1" title="Between 0 and 4"/></label>
+        <label>Probability of success: <input type="text" name="success chance" pattern="0(\.\d+)?|1\.0|1" title="Numbers only" placeholder="Numbers only" value="0.999"></label>
+        <h2 id="result" style="background-color: yellow;">Result will appear here.</h2>
         <button type="submit">Submit</button>
     </form>
-    <h2 id="result" style="background-color: yellow;"></h2>
 </body>
+
 <script>
+    // Show additional fields when The Heart of Void is checked
+    document.querySelector('input[value="The Heart of Void"]').addEventListener('change', function() {
+        var additionalFields = document.getElementById('The Heart of Void fields');
+        if (this.checked) {
+            additionalFields.style.display = 'block';
+        } else {
+            additionalFields.style.display = 'none';
+        }
+    });
+    // Grey out fields for The Heart of Void when the number of resetters is changed
+    document.querySelector('input[name="resetter count"]').addEventListener('change', function() {
+        var resetterCount = parseInt(this.value);
+        var additionalFields = document.getElementById('The Heart of Void fields');
+        var fields = additionalFields.querySelectorAll('input[type="text"]');
+        var i = 0;
+        fields.forEach(function(field) {
+            if (resetterCount + 1 >= i++) {
+                field.disabled = false;
+                field.style.backgroundColor = '';
+            } else {
+                field.disabled = true;
+                field.value = '0';
+                field.style.backgroundColor = '#e0e0e0';
+            }
+        });
+    });
+    // Calculate the result when the form is submitted
     document.querySelector('form').addEventListener('submit', function(event){
         event.preventDefault();
 
