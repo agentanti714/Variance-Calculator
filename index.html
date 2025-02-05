@@ -30,7 +30,7 @@
     <p>It tells you the value to divide final ore value by, assuming you use the mean values for calculating your upgrader multipliers.</p>
     <p>Fill in the form below and click the submit button to get the result (scroll down).</p>
     <p>The default values in the input fields are suggestions.</p>
-    <p>Variance(lg(other items)) above should include uncertainty from items like Ooftopian Refiner, Temporal Armageddon, and inconsistent upgraders, combined over all resetter uses.</p>
+    <p>Var(lg(other items)) above should include uncertainty from items like Ooftopian Refiner, Temporal Armageddon, and inconsistent upgraders, combined over all resetter uses.</p>
     <p>Only covers realistic cases i.e. 0.001 ≤ probability of success ≤ 0.999.</p>
     <p>Discord: agentanti714.</p>
     <form>
@@ -50,20 +50,20 @@
         <label><input type="checkbox" name="upgrader" value="Legendary Peppermint" checked> Legendary Peppermint</label>
         <label><input type="checkbox" name="upgrader" value="Enchanted Library" checked> Enchanted Library</label>
         <label><input type="checkbox" name="upgrader" value="Anti-Gravity Scanner" checked> Anti-Gravity Scanner</label>
-        <label><input type="checkbox" name="upgrader" value="The Heart of Void"> The Heart of Void</label>
+        <label><input type="checkbox" name="upgrader" value="The Heart of Void" checked> The Heart of Void</label>
         <div id="The Heart of Void fields">
             <p>Chance that the ore is upgraded by The Heart of Void:</p>
-            <label>0 times: <input type="text" name="THoVfield0" value="0"></label>
-            <label>1 times: <input type="text" name="THoVfield1" value="0"></label>
-            <label>2 times: <input type="text" name="THoVfield2" value="0"></label>
-            <label>3 times: <input type="text" name="THoVfield3" value="0"></label>
-            <label>4 times: <input type="text" name="THoVfield4" value="0"></label>
-            <label>5 times: <input type="text" name="THoVfield5" value="0"></label>
+            <label>0 times: <input type="text" name="THoVfield0" pattern="0(\.\d+)?|1\.0|1" title="Between 0 and 1" value="0"></label>
+            <label>1 time: &nbsp; <input type="text" name="THoVfield1" pattern="0(\.\d+)?|1\.0|1" title="Between 0 and 1" value="0"></label>
+            <label>2 times: <input type="text" name="THoVfield2" pattern="0(\.\d+)?|1\.0|1" title="Between 0 and 1" value="0.5"></label>
+            <label>3 times: <input type="text" name="THoVfield3" pattern="0(\.\d+)?|1\.0|1" title="Between 0 and 1" value="0.5"></label>
+            <label>4 times: <input type="text" name="THoVfield4" pattern="0(\.\d+)?|1\.0|1" title="Between 0 and 1" value="0"></label>
+            <label>5 times: <input type="text" name="THoVfield5" pattern="0(\.\d+)?|1\.0|1" title="Between 0 and 1" value="0"></label>
         </div>
         <h2>Other:</h2>
-        <label>Variance(lg(other items)): <input type="text" name="other variance" pattern="[0-9]*\.[0-9]+|[0-9]*" title="Numbers only" placeholder="Numbers only" value="0.3"></label>
+        <label>Var(lg(other items)): <input type="text" name="other variance" pattern="[0-9]*\.[0-9]+|[0-9]*" title="Numbers only" placeholder="Numbers only" value="0.3"></label>
         <label>No. of resetters: <input type="number" name="resetter count" value="4" min="0" max="4" step="1" title="Between 0 and 4"/></label>
-        <label>Probability of success: <input type="text" name="success chance" pattern="0(\.\d+)?|1\.0|1" title="Numbers only" placeholder="Numbers only" value="0.999"></label>
+        <label>Probability of success: <input type="text" name="success chance" pattern="0(\.\d+)?|1\.0|1" title="Between 0 and 1" placeholder="Between 0 and 1" value="0.999"></label>
         <h2 id="result" style="background-color: yellow;">Result will appear here.</h2>
         <button type="submit">Submit</button>
     </form>
@@ -79,6 +79,7 @@
             additionalFields.style.display = 'none';
         }
     });
+
     // Grey out fields for The Heart of Void when the number of resetters is changed
     document.querySelector('input[name="resetter count"]').addEventListener('change', function() {
         var resetterCount = parseInt(this.value);
@@ -96,6 +97,25 @@
             }
         });
     });
+
+    // Validate The Heart of Void fields if The Heart of Void is checked
+    document.querySelector('form').addEventListener('submit', function(event) {
+        if (!document.querySelector('input[value="The Heart of Void"]').checked) {
+            return;
+        }
+        var resetterCount = parseInt(document.querySelector('input[name="resetter count"]').value);
+        var additionalFields = document.getElementById('The Heart of Void fields');
+        var fields = additionalFields.querySelectorAll('input[type="text"]');
+        var sum = 0;
+        fields.forEach(function(field) {
+            sum += parseFloat(field.value);
+        });
+        if (sum != 1) {
+            alert('The sum of the chances for The Heart of Void should be 1.');
+            event.preventDefault();
+        }
+    });
+
     // Calculate the result when the form is submitted
     document.querySelector('form').addEventListener('submit', function(event){
         event.preventDefault();
@@ -108,7 +128,7 @@
         var additionalVariance = parseFloat(document.querySelector('input[name="other variance"]').value);
         var resetterCount = parseInt(document.querySelector('input[name="resetter count"]').value);
         var successChance = parseFloat(document.querySelector('input[name="success chance"]').value);
-
+        
         // Calculate the result
         const minesToVariances = new Map([
             ['Havium Mine', 0.0827552697442],
@@ -131,6 +151,24 @@
         mine = minesToVariances.get(mine);
 
         upgraders.forEach(function(upgrader) {
+            if (upgrader === 'The Heart of Void') {
+                var additionalFields = document.getElementById('The Heart of Void fields');
+                var fields = additionalFields.querySelectorAll('input[type="text"]');
+                var chancelist = [];
+                fields.forEach(function(field) {
+                    chancelist.push(parseFloat(field.value));
+                });
+                var mean = 0;
+                chancelist.forEach(function(chance, index) {
+                    mean += chance * index * 0.69897000433601880;   //lg(5) = 0.69897000433601880
+                });
+                var variance = 0;
+                chancelist.forEach(function(chance, index) {
+                    variance += chance * Math.pow(index * 0.69897000433601880 - mean, 2);
+                });
+                result += variance //The Heart of Void
+                return;
+            }
             result += upgradersToVariances.get(upgrader) * (resetterCount + 1); //upgraders
         });
 
