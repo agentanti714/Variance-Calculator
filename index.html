@@ -150,7 +150,7 @@
 
         mine = minesToVariances.get(mine);
 
-        upgraders.forEach(function(upgrader) {
+        upgraders.forEach(function(upgrader) { //The Heart of Void
             if (upgrader === 'The Heart of Void') {
                 var additionalFields = document.getElementById('The Heart of Void fields');
                 var fields = additionalFields.querySelectorAll('input[type="text"]');
@@ -166,7 +166,7 @@
                 chancelist.forEach(function(chance, index) {
                     variance += chance * Math.pow(index * 0.69897000433601880 - mean, 2);
                 });
-                result += variance //The Heart of Void
+                result += variance
                 return;
             }
             result += upgradersToVariances.get(upgrader) * (resetterCount + 1); //upgraders
