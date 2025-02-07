@@ -169,10 +169,11 @@
         fields.forEach(function(field) {
             sum += parseFloat(field.value);
         });
-        if (sum != 1) {
-            alert('The sum of the chances for The Heart of Void should be 1.');
+        if (Math.abs(sum - 1) > 0.00001) { 
+            alert('The sum of the chances for The Heart of Void should be approximately 1.');
             event.preventDefault();
         }
+
     });
 
     // Show and handle the correct fields based on the calculation choice
