@@ -42,14 +42,14 @@
         </select>
 
         <h2>Upgraders:</h2>
-        <label><input type="checkbox" name="upgrader" value="Astral Setter" checked> Astral Setter</label>
-        <label><input type="checkbox" name="upgrader" value="Meralin's Sorcery" checked> Meralin's Sorcery</label>
-        <label><input type="checkbox" name="upgrader" value="Reaper's Fortress" checked> Reaper's Fortress</label>
-        <label><input type="checkbox" name="upgrader" value="Final Faberge" checked> Final Faberge</label>
-        <label><input type="checkbox" name="upgrader" value="Midas Blaster" checked> Midas Blaster</label>
-        <label><input type="checkbox" name="upgrader" value="Legendary Peppermint" checked> Legendary Peppermint</label>
-        <label><input type="checkbox" name="upgrader" value="Enchanted Library" checked> Enchanted Library</label>
         <label><input type="checkbox" name="upgrader" value="Anti-Gravity Scanner" checked> Anti-Gravity Scanner</label>
+        <label><input type="checkbox" name="upgrader" value="Astral Setter" checked> Astral Setter</label>
+        <label><input type="checkbox" name="upgrader" value="Enchanted Library" checked> Enchanted Library</label>
+        <label><input type="checkbox" name="upgrader" value="Final Faberge" checked> Final Faberge</label>
+        <label><input type="checkbox" name="upgrader" value="Legendary Peppermint" checked> Legendary Peppermint</label>
+        <label><input type="checkbox" name="upgrader" value="Meralin's Sorcery" checked> Meralin's Sorcery</label>
+        <label><input type="checkbox" name="upgrader" value="Midas Blaster" checked> Midas Blaster</label>
+        <label><input type="checkbox" name="upgrader" value="Reaper's Fortress" checked> Reaper's Fortress</label>
         <label><input type="checkbox" name="upgrader" value="The Heart of Void" checked> The Heart of Void</label>
         <div id="The Heart of Void fields">
             <p>Chance that the ore is upgraded by The Heart of Void:</p>
@@ -216,18 +216,16 @@
             ['Havium Mine', 0.0827552697442],
             ['Other', 0.0]
         ]);
-        const upgradersToVariances = new Map([
-            ['Havium Mine', 0.0827552697442],
-            ['Astral Setter', 0.13323048167015814],
-            ['Meralin\'s Sorcery', 0.002435765663214982],
-            ['Reaper\'s Fortress', 0.0036113960632035477],
-            ['Final Faberge', 0.008246456248093403],
-            ['Midas Blaster', 0.04329382557027653],
-            ['Legendary Peppermint', 0.006147545488536342],
-            ['Enchanted Library', 0.006510393605178625],
-            ['Anti-Gravity Scanner', 0.16700695993968798]
-        ]);
-
+        const upgradersToVariances = new Map([['Anti-Gravity Scanner', 0.16700695993968798], 
+            ['Astral Setter', 0.13323048167015814], 
+            ['Enchanted Library', 0.006510393605178625], 
+            ['Final Faberge', 0.008246456248093403], 
+            ['Havium Mine', 0.0827552697442], 
+            ['Legendary Peppermint', 0.006147545488536342], 
+            ["Meralin's Sorcery", 0.002435765663214982], 
+            ['Midas Blaster', 0.04329382557027653], 
+            ["Reaper's Fortress", 0.0036113960632035477]]);
+        
         var result = 0;
 
         mine = minesToVariances.get(mine);
