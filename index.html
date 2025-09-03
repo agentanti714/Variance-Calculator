@@ -48,11 +48,13 @@
         <label><input type="checkbox" name="upgrader" value="Deceptive Sorcery" checked> Deceptive Sorcery</label>
         <label><input type="checkbox" name="upgrader" value="Enchanted Library" checked> Enchanted Library</label>
         <label><input type="checkbox" name="upgrader" value="Final Faberge" checked> Final Faberge</label>
+        <label><input type="checkbox" name="upgrader" value="Garden of Gaia" checked> Garden of Gaia</label>
         <label><input type="checkbox" name="upgrader" value="Legendary Peppermint" checked> Legendary Peppermint</label>
         <label><input type="checkbox" name="upgrader" value="Meralin's Sorcery" checked> Meralin's Sorcery</label>
         <label><input type="checkbox" name="upgrader" value="Midas Blaster" checked> Midas Blaster</label>
         <label><input type="checkbox" name="upgrader" value="Ore Memer" checked> Ore Memer</label>
         <label><input type="checkbox" name="upgrader" value="Reaper's Fortress" checked> Reaper's Fortress</label>
+        <label><input type="checkbox" name="upgrader" value="The Chaosrealm" checked> The Chaosrealm</label>
         <label><input type="checkbox" name="upgrader" value="The Heart of Void" checked> The Heart of Void</label>
         <div id="The Heart of Void fields">
             <p>Chance that the ore is upgraded by The Heart of Void:</p>
@@ -235,7 +237,18 @@
         mine = minesToVariances.get(mine);
 
         upgraders.forEach(function(upgrader) { //The Heart of Void
-            if (upgrader === 'The Heart of Void') {
+            if (upgradersToVariances.has(upgrader)) {
+                result += upgradersToVariances.get(upgrader) * (resetterCount + 1);
+                return;
+            } else if (upgrader === "Garden of Gaia") {
+                if (upgraders.has("Astral Setter")) {
+                    result += 0.0018520323765354879 * (resetterCount + 1);
+                }
+            } else if (upgrader === "The Chaosrealm") {
+                if (upgraders.has("Astral Setter")) {
+                    result += 0.011242619332684996 * (resetterCount + 1);
+                }
+            } else if (upgrader === 'The Heart of Void') {
                 var additionalFields = document.getElementById('The Heart of Void fields');
                 var fields = additionalFields.querySelectorAll('input[type="text"]');
                 var chancelist = [];
@@ -252,11 +265,13 @@
                 });
                 result += variance
                 return;
+            } else {
+                alert('Unknown upgrader: ' + upgrader);
+                return;
             }
-            result += upgradersToVariances.get(upgrader) * (resetterCount + 1); //upgraders
         });
 
-        result = mine + result + additionalVariance; //lg(overall variance)
+        result += mine + additionalVariance; //lg(overall variance)
         result = Math.sqrt(result); //lg(overall standard deviation)
 
         if (calcChoice === 'Probability') {
