@@ -27,8 +27,8 @@
 </head>
 <body>
     <h1>Variance Calculator</h1>
-    <p>Last updated: 2025-09-02</p>
-    <p>It tells you the value to divide final ore value by, assuming you use the mean values for calculating your upgrader multipliers.</p>
+    <p>Last updated: 2025-09-05</p>
+    <p>It calculates the value to divide the final ore value by, assuming you use the (geometric) mean values for upgrader multipliers.</p>
     <p>Fill in the form below and click the submit button to get the result (scroll down).</p>
     <p>The default values in the input fields are suggestions.</p>
     <p>Var(lg(other items)) above should include uncertainty from items like Ooftopian Refiner, Temporal Armageddon, and inconsistent upgraders, combined over all resetter uses.</p>
@@ -39,7 +39,7 @@
         <label for="mine"></label>
         <select name="mine" id="mine">
             <option value="Havium Mine" selected>Havium Mine</option>
-            <option value="Other">Other (No variance)</option>
+            <option value="Default">Default (No variance)</option>
         </select>
 
         <h2>Upgraders:</h2>
@@ -207,6 +207,10 @@
         var upgraders = Array.from(document.querySelectorAll('input[name="upgrader"]:checked')).map(function(checkbox) {
             return checkbox.value;
         });
+        if (upgraders.includes("The Heart of Void")) {
+            var additionalFields = document.getElementById('The Heart of Void fields');
+            var fields = additionalFields.querySelectorAll('input[type="text"]');
+        }
         var additionalVariance = parseFloat(document.querySelector('input[name="other variance"]').value);
         var resetterCount = parseInt(document.querySelector('input[name="resetter count"]').value);
         var calcChoice = document.querySelector('select[name="calc choice"]').value;
@@ -219,7 +223,7 @@
         // Calculate the result
         const minesToVariances = new Map([
             ['Havium Mine', 0.0827552697442],
-            ['Other', 0.0]
+            ['Default', 0.0]
         ]);
         const upgradersToVariances = new Map([['Anti-Gravity Scanner', 0.16700695993968798], 
             ['Astral Setter', 0.13323048167015814], 
@@ -240,17 +244,31 @@
             if (upgradersToVariances.has(upgrader)) {
                 result += upgradersToVariances.get(upgrader) * (resetterCount + 1);
                 return;
-            } else if (upgrader === "Garden of Gaia") {
-                if (upgraders.includes("Astral Setter")) {
-                    result += 0.0018520323765354879 * (resetterCount + 1);
+            } else if (upgrader === "Garden of Gaia" || upgrader === "The Chaosrealm") {
+                if (upgraders.includes("Anti-Gravity Scanner")) {
+                    result += new Map([["Garden of Gaia", 1.7295560134521763e-05], ["The Chaosrealm", 0.00010499136041116844]]).get(upgrader) * (resetterCount + 1);
                 }
-            } else if (upgrader === "The Chaosrealm") {
                 if (upgraders.includes("Astral Setter")) {
-                    result += 0.011242619332684996 * (resetterCount + 1);
+                    result += new Map([["Garden of Gaia", 0.0018520323765354879], ["The Chaosrealm", 0.011242619332684996]]).get(upgrader) * (resetterCount + 1);
                 }
+                if (upgraders.includes("The Heart of Void")) {
+                    var lgMult = new Map([["Garden of Gaia", 0.00860017176191756104893669230795], ["The Chaosrealm", 0.02118929906993807279350526712326]]).get(upgrader); //lg(1.02) and lg(1.05)
+                    var chancelist = [];
+                    fields.forEach(function(field) {
+                        chancelist.push(parseFloat(field.value));
+                    });
+                    var mean = 0;
+                    chancelist.forEach(function(chance, index) {
+                        mean += chance * index * lgMult;
+                    });
+                    var variance = 0;
+                    chancelist.forEach(function(chance, index) {
+                        variance += chance * Math.pow(index * lgMult - mean, 2);
+                    });
+                    result += variance
+                }
+                return;
             } else if (upgrader === 'The Heart of Void') {
-                var additionalFields = document.getElementById('The Heart of Void fields');
-                var fields = additionalFields.querySelectorAll('input[type="text"]');
                 var chancelist = [];
                 fields.forEach(function(field) {
                     chancelist.push(parseFloat(field.value));
