@@ -27,11 +27,11 @@
 </head>
 <body>
     <h1>Variance Calculator</h1>
-    <p>Last updated: 2025-09-05</p>
-    <p>It calculates the value to divide the final ore value by, assuming you use the (geometric) mean values for upgrader multipliers.</p>
+    <p>Last updated: 2025-11-16</p>
+    <p>It calculates the value to divide the final ore value by.</p>
     <p>Fill in the form below and click the submit button to get the result (scroll down).</p>
-    <p>The default values in the input fields are suggestions.</p>
-    <p>Var(lg(other items)) above should include uncertainty from items like Ooftopian Refiner, Temporal Armageddon, and inconsistent upgraders, combined over all resetter uses.</p>
+    <p>The default values given are suggestions.</p>
+    <p>Var(lg(other items)) is for multiplier variance of other items, combined over all resetter uses.</p>
     <p>Only covers realistic cases i.e. 0.001 ≤ probability of success ≤ 0.999.</p>
     <p>Discord: agentanti714.</p>
     <form>
@@ -39,10 +39,11 @@
         <label for="mine"></label>
         <select name="mine" id="mine">
             <option value="Havium Mine" selected>Havium Mine</option>
-            <option value="Default">Default (No variance)</option>
+            <option value="Constant">Constant (No variance)</option>
         </select>
 
         <h2>Upgraders:</h2>
+        <label><input type="checkbox" name="upgrader" value="Ancient Catalyst" checked> Ancient Catalyst</label>
         <label><input type="checkbox" name="upgrader" value="Anti-Gravity Scanner" checked> Anti-Gravity Scanner</label>
         <label><input type="checkbox" name="upgrader" value="Astral Setter" checked> Astral Setter</label>
         <label><input type="checkbox" name="upgrader" value="Deceptive Sorcery" checked> Deceptive Sorcery</label>
@@ -223,9 +224,10 @@
         // Calculate the result
         const minesToVariances = new Map([
             ['Havium Mine', 0.0827552697442],
-            ['Default', 0.0]
+            ['Constant', 0.0]
         ]);
-        const upgradersToVariances = new Map([['Anti-Gravity Scanner', 0.16700695993968798], 
+        const upgradersToVariances = new Map([['Ancient Catalyst', 0.0013102635915371776],
+            ['Anti-Gravity Scanner', 0.16700695993968798], 
             ['Astral Setter', 0.13323048167015814], 
             ['Deceptive Sorcery', 0.12213976674037355], 
             ['Enchanted Library', 0.006510393605178625], 
