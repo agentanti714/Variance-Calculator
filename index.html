@@ -56,7 +56,7 @@
     <p>Var(lg(other upgraders)) is for multiplier variance of other upgraders, combined over all resetter uses.</p>
     <p>Only covers realistic cases i.e. 0.001 ≤ probability of success ≤ 0.999.</p>
     <p>Discord: agentanti714.</p>
-    <form onSubmit="return false;"> <!-- Prevent page reload on submit -->
+    <form id="varianceForm" onSubmit="return false;"> <!-- Prevent page reload on submit -->
         <h2>Mine:</h2>
         <label for="mine"></label>
         <select name="mine" id="mine">
@@ -106,7 +106,7 @@
             <label id="Multiplier" style="display:none">Multiplier above rebirth price: <input type="text" name="multiplier" pattern="[0-9]*\.[0-9]+|[0-9]*" title="Numbers only" placeholder="Numbers only" value="1.5"></label>
         </div>
 
-        <h2 id="result" style="background-color: yellow;">Result will appear here.</h2>
+        <h2 id="result" style="background-color: yellow;">Loading...</h2>
     </form>
 </body>
 
@@ -334,6 +334,9 @@
         }
         
     });
+
+    // Trigger initial form update on page load
+    document.querySelector('form').dispatchEvent(new Event('input'));
 </script>
 <noscript>
     <p>Please enable JavaScript to use this calculator.</p>
